@@ -39,7 +39,7 @@
           </div>
 
           <div class="column is-12 has-text-centered">
-            <a href="#" class="button is-info is-size-3 mt-6 mb-6">Click here to get started</a>
+            <a href="/courses" class="button is-info is-size-3 mt-6 mb-6">Click here to get started</a>
           </div>
           
         </div>

@@ -4,7 +4,7 @@
       <div class="hero is-info ">
         <div class="hero-body has-text-centered">
           <h1 class="title">Log In</h1>
-          <p>Welcome to StudyNet! Let's begin the adventure</p>
+          <p>Welcome to HappyStudy! Let's begin the adventure</p>
         </div>
       </div>
   
@@ -45,7 +45,7 @@
                     </form>
 
                     <hr>
-                    New to StudyNet?
+                    New to HappyStudy?
                     <router-link to="/sign-up">Click here </router-link>to Sign up!
                 </div>
             </div>

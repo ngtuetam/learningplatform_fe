@@ -17,7 +17,8 @@
                                 v-for="lesson in lessons"
                                 v-bind:key="lesson.id"
                             >
-                                <a @click="activeLesson = lesson">{{ lesson.title }}</a>
+                                <!-- <a @click="activeLesson = lesson">{{ lesson.title }}</a> -->
+                                <a @click="setActiveLesson(lesson)">{{ lesson.title }}</a>
                             </li>
                         </ul>
                     </div>
@@ -28,6 +29,53 @@
                                 <h2>{{ activeLesson.title }}</h2>
                                 
                                 {{ activeLesson.long_description }}
+
+                                <hr>
+
+                                <article 
+                                    class="media box"
+                                    v-for="comment in comments"
+                                    v-bind:key="comment.id"
+                                >
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p>
+                                                <strong>{{ comment.name }}</strong> {{ comment.created_at }}<br>
+                                                {{ comment.content }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <form v-on:submit.prevent="submitComment()">
+                                    <div class="field">
+                                        <label class="label">Name</label>
+                                        <div class="control">
+                                            <input type="text" class="input" v-model="comment.name">
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Comments</label>
+                                        <div class="control">
+                                            <textarea class="textarea" v-model="comment.content"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div 
+                                        class="notification is-danger"
+                                        v-for="error in errors"
+                                        v-bind:key="error"
+                                    >
+                                        {{ error }}
+                                    </div>
+                                    
+                                    <div class="field">
+                                        <div class="control">
+                                            <button class="button is-link">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </template>
 
                             <template v-else>
@@ -55,7 +103,13 @@ export default {
         return {
             course: {},
             lessons: [],
-            activeLesson: null
+            comments: [],
+            errors: [],
+            activeLesson: null,
+            comment: {
+                name: '',
+                content: ''
+            }
         }
     },
     mounted() {
@@ -71,6 +125,51 @@ export default {
                 this.course = response.data.course
                 this.lessons = response.data.lessons
             })
+    },
+    methods: {
+        submitComment() {
+            console.log('submitComment')
+
+            this.errors = []
+
+            if (this.comment.name === '') {
+                this.errors.push('The name is missing!')
+            }
+
+            if (this.comment.content === '') {
+                this.errors.push('The content is missing!')
+            }
+
+            if(!this.errors.length) {
+                axios
+                    .post(`/api/v1/courses/${this.course.slug}/${this.activeLesson.slug}`, this.comment)
+                    .then(response => {
+                        this.comment.name = ''
+                        this.comment.content = ''
+                        // alert('Your comment was submited!')
+                        
+                        this.comments.push(response.data)
+
+                })
+                .catch(error => {
+                        console.log(error)
+                })
+            }
+            
+        },
+        setActiveLesson(lesson) {
+            this.activeLesson = lesson
+            this.getComments()
+        },
+        getComments() {
+            axios
+                .get(`/api/v1/courses/${this.course.slug}/${this.activeLesson.slug}/get-comments/`)
+                .then(response => {
+                    console.log(response.data)
+                    this.comments = response.data
+                })
+
+        }
     }
 }
 </script>
